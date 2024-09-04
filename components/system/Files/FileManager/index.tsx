@@ -1,4 +1,5 @@
-import React, { memo, useEffect, useMemo, useRef, useState, FC } from "react";
+import { basename, join } from "path";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import FileEntry from "components/system/Files/FileEntry";
 import StyledSelection from "components/system/Files/FileManager/Selection/StyledSelection";
@@ -10,11 +11,7 @@ import useFocusableEntries from "components/system/Files/FileManager/useFocusabl
 import useFolder from "components/system/Files/FileManager/useFolder";
 import useFolderContextMenu from "components/system/Files/FileManager/useFolderContextMenu";
 import {
-  useClipboardEventTracker,
-  useFolderTracker,
-} from "../../../../hooks/EventTracker";
-import {
-  FileManagerViewNames,
+  type FileManagerViewNames,
   FileManagerViews,
 } from "components/system/Files/Views";
 import { useFileSystem } from "contexts/fileSystem";
@@ -25,14 +22,15 @@ import {
   SHORTCUT_EXTENSION,
 } from "utils/constants";
 import { getExtension, haltEvent } from "utils/functions";
-import { basename, join } from "path";
 
 const StatusBar = dynamic(
   () => import("components/system/Files/FileManager/StatusBar")
 );
+
 const StyledEmpty = dynamic(
   () => import("components/system/Files/FileManager/StyledEmpty")
 );
+
 const StyledLoading = dynamic(
   () => import("components/system/Files/FileManager/StyledLoading")
 );
@@ -53,24 +51,6 @@ type FileManagerProps = {
   skipSorting?: boolean;
   url: string;
   view: FileManagerViewNames;
-  customIcons?: Array<{
-    "data-file": string;
-    style: React.CSSProperties;
-    iconProps: {
-      "aria-label": string;
-      title: string;
-      alt: string;
-      src: string;
-      srcSet: string;
-    };
-  }>;
-  onFileSingleClick?: (file: string) => void;
-  onFileOpen?: (file: string) => void;
-  onFileDoubleClick?: (file: string) => void; // Added this line
-};
-
-const defaultFileOpenHandler = (file: string) => {
-  console.log(`file opened ${file}`);
 };
 
 const FileManager: FC<FileManagerProps> = ({
@@ -89,25 +69,10 @@ const FileManager: FC<FileManagerProps> = ({
   skipSorting,
   url,
   view,
-  customIcons = [],
-  onFileOpen = defaultFileOpenHandler,
-  onFileDoubleClick = defaultFileOpenHandler,
-  onFileSingleClick = defaultFileOpenHandler,
 }) => {
   const [currentUrl, setCurrentUrl] = useState(url);
   const [renaming, setRenaming] = useState("");
   const [mounted, setMounted] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (url !== currentUrl) {
-      setCurrentUrl(url);
-    }
-  }, [url, currentUrl]);
-
-  useFolderTracker(currentUrl, { logToConsole: true });
-
-  useClipboardEventTracker({ logToConsole: true });
-
   const fileManagerRef = useRef<HTMLOListElement | null>(null);
   const { focusedEntries, focusableEntry, ...focusFunctions } =
     useFocusableEntries(fileManagerRef);
@@ -118,7 +83,6 @@ const FileManager: FC<FileManagerProps> = ({
       skipFsWatcher,
       skipSorting,
     });
-
   const { lstat, mountFs, rootFs } = useFileSystem();
   const { StyledFileEntry, StyledFileManager } = FileManagerViews[view];
   const { isSelecting, selectionRect, selectionStyling, selectionEvents } =
@@ -208,7 +172,7 @@ const FileManager: FC<FileManagerProps> = ({
               mountFs(url)
                 .then(() => setTimeout(updateFiles, 100))
                 .catch(() => {
-                  // Ignore race-condition failures
+                  // Ignore race-condtion failures
                 });
             }
             return true;
@@ -216,7 +180,7 @@ const FileManager: FC<FileManagerProps> = ({
         }
       };
 
-      mountUrl().then(() => []);
+      mountUrl();
     }
   }, [lstat, mountFs, mounted, updateFiles, url]);
 
@@ -226,7 +190,7 @@ const FileManager: FC<FileManagerProps> = ({
       setCurrentUrl(url);
       setPermission("denied");
     }
-  }, [url, folderActions]);
+  }, [currentUrl, folderActions, url]);
 
   useEffect(() => {
     if (!loading && !isDesktop && !isStartMenu) {
@@ -257,51 +221,6 @@ const FileManager: FC<FileManagerProps> = ({
             {...FOCUSABLE_ELEMENT}
           >
             {isSelecting && <StyledSelection style={selectionStyling} />}
-            {customIcons.map((icon, index) => (
-              <li
-                key={index}
-                draggable="true"
-                style={icon.style}
-                data-file={icon["data-file"]}
-                className="sc-iGgVNO iPgsct"
-                onClick={() => {
-                  onFileSingleClick(icon["data-file"]);
-                }}
-                onDoubleClick={() => {
-                  onFileDoubleClick(icon["data-file"]);
-                }}
-              >
-                <button
-                  aria-label={icon.iconProps["aria-label"]}
-                  type="button"
-                  className="sc-aYaIB hErKd"
-                  title={icon.iconProps["title"]}
-                >
-                  <figure className="sc-dcJtft lflafl">
-                    <picture>
-                      <source
-                        media="(min-resolution: 2.01x), (-webkit-min-device-pixel-ratio: 2.01)"
-                        srcSet={icon.iconProps["srcSet"]}
-                        type="image/webp"
-                      />
-                      <img
-                        alt={icon.iconProps["alt"]}
-                        decoding="async"
-                        draggable="false"
-                        height="48"
-                        loading="eager"
-                        width="48"
-                        className="sc-gEvDqW jWxKGF"
-                        src={icon.iconProps["src"]}
-                      />
-                    </picture>
-                    <figcaption aria-level={1} role="heading">
-                      {icon.iconProps["alt"]}
-                    </figcaption>
-                  </figure>
-                </button>
-              </li>
-            ))}
             {fileKeys.map((file) => (
               <StyledFileEntry
                 key={file}
@@ -311,13 +230,6 @@ const FileManager: FC<FileManagerProps> = ({
                 {...(!readOnly && draggableEntry(url, file, renaming === file))}
                 {...(renaming === "" && { onKeyDown: keyShortcuts(file) })}
                 {...focusableEntry(file)}
-                data-file={file}
-                onClick={() => {
-                  onFileSingleClick?.(file);
-                }}
-                onDoubleClick={() => {
-                  onFileDoubleClick?.(file);
-                }}
               >
                 <FileEntry
                   fileActions={fileActions}
@@ -339,7 +251,6 @@ const FileManager: FC<FileManagerProps> = ({
                   setRenaming={setRenaming}
                   stats={files[file]}
                   view={view}
-                  handleFileOpen={onFileOpen}
                 />
               </StyledFileEntry>
             ))}

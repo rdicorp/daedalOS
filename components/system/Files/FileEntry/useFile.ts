@@ -47,7 +47,7 @@ const useFile = (url: string, path: string): UseFile => {
           )
         );
 
-        await updateFolder(DESKTOP_PATH, basename(runUrl));
+        updateFolder(DESKTOP_PATH, basename(runUrl));
       }
 
       if (activePid) {

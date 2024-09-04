@@ -5,7 +5,6 @@ import {
   type ObjectReaders,
 } from "components/system/Dialogs/Transfer/useTransferDialog";
 import { type Size } from "components/system/Window/RndWindow/useResizable";
-import React from "react";
 
 type BrowserProcessArguments = {
   initialTitle?: string;

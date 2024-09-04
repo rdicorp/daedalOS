@@ -1,5 +1,5 @@
 import { basename, extname, join, relative } from "path";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import useTransferDialog from "components/system/Dialogs/Transfer/useTransferDialog";
 import {
   getEventData,
@@ -59,7 +59,7 @@ const useFileDrop = ({
             if (completeAction === COMPLETE_ACTION.UPDATE_URL) {
               url(id, tempPath);
             }
-            await updateFolder(DESKTOP_PATH, filePath);
+            updateFolder(DESKTOP_PATH, filePath);
 
             return basename(tempPath);
           }
@@ -165,5 +165,3 @@ const useFileDrop = ({
 };
 
 export default useFileDrop;
-
-// path components/system/Files/FileManager/useFileDrop.ts

@@ -117,7 +117,7 @@ export const useNip05 = (): NIP05Result => {
   }, [updateNip05]);
 
   useEffect(() => {
-    if (!nip05) fetchNip05Json().then((r) => r);
+    if (!nip05) fetchNip05Json();
   }, [fetchNip05Json, nip05]);
 
   return nip05 || ({} as NIP05Result);
@@ -209,7 +209,7 @@ export const useUnreadStatus = (id: string, unreadCount: number): void => {
 
   useEffect(() => {
     if (unreadCount > currentUnreadCount) {
-      new Audio(NOTIFICATION_SOUND).play().then((r) => r);
+      new Audio(NOTIFICATION_SOUND).play();
     }
 
     setCurrentUnreadCount(unreadCount);

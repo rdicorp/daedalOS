@@ -1,5 +1,5 @@
 import { Rnd } from "react-rnd";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import useRnd from "components/system/Window/RndWindow/useRnd";
 import { useProcesses } from "contexts/process";
 import { FOCUSABLE_ELEMENT, PREVENT_SCROLL } from "utils/constants";

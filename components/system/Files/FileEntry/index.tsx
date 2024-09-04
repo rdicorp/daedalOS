@@ -1,6 +1,6 @@
 import { basename, dirname, extname, join } from "path";
 import { useTheme } from "styled-components";
-import React, {
+import {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -94,9 +94,6 @@ type FileEntryProps = {
   setRenaming: React.Dispatch<React.SetStateAction<string>>;
   stats: FileStat;
   view: FileManagerViewNames;
-
-  // Add handleFileOpen to the props
-  handleFileOpen: (file: string) => void;
 };
 
 const truncateName = (
@@ -150,8 +147,6 @@ const FileEntry: FC<FileEntryProps> = ({
   stats,
   hasNewFolderIcon,
   view,
-
-  handleFileOpen,
 }) => {
   const { blurEntry, focusEntry } = focusFunctions;
   const { url: changeUrl } = useProcesses();
@@ -201,7 +196,7 @@ const FileEntry: FC<FileEntryProps> = ({
         const uniqueName = await createPath(fileDropName, directory, data);
 
         if (uniqueName) {
-          await updateFolder(directory, uniqueName);
+          updateFolder(directory, uniqueName);
 
           return uniqueName;
         }
@@ -276,9 +271,7 @@ const FileEntry: FC<FileEntryProps> = ({
     stats,
     url,
   ]);
-
   const [tooltip, setTooltip] = useState<string>();
-
   const doubleClickHandler = useCallback(() => {
     if (
       openInFileExplorer &&
@@ -291,10 +284,7 @@ const FileEntry: FC<FileEntryProps> = ({
     } else if (openInFileExplorer && listView) {
       setShowInFileManager((currentState) => !currentState);
     } else {
-      openFile(pid, isDynamicIcon ? undefined : icon).then((r) => r);
-    }
-    if (!stats.isDirectory()) {
-      handleFileOpen(path); // Call handleFileOpen when file is opened
+      openFile(pid, isDynamicIcon ? undefined : icon);
     }
   }, [
     blurEntry,
@@ -308,9 +298,6 @@ const FileEntry: FC<FileEntryProps> = ({
     pid,
     url,
     urlExt,
-    handleFileOpen, // Add handleFileOpen to dependencies
-    path, // Add path to dependencies
-    stats, // Add stats to dependencies
   ]);
 
   useEffect(() => {
@@ -406,10 +393,7 @@ const FileEntry: FC<FileEntryProps> = ({
                       ...info,
                       icon: bufferToUrl(cachedIcon),
                     }));
-                    await updateFolder(
-                      baseCachedPath,
-                      basename(cachedIconPath)
-                    );
+                    updateFolder(baseCachedPath, basename(cachedIconPath));
 
                     return nextQueueItem();
                   });
@@ -419,7 +403,7 @@ const FileEntry: FC<FileEntryProps> = ({
               }
             };
 
-            if (iconRef.current.complete) await cacheIcon();
+            if (iconRef.current.complete) cacheIcon();
             else {
               iconRef.current.addEventListener(
                 "load",
@@ -455,7 +439,7 @@ const FileEntry: FC<FileEntryProps> = ({
         }
       };
 
-      updateIcon().then((r) => r);
+      updateIcon();
     }
 
     if (!isVisible && getIconAbortController.current) {

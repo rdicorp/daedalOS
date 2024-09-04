@@ -1,6 +1,6 @@
 import { join } from "path";
 import { type Position } from "react-rnd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getMimeType } from "components/system/Files/FileEntry/functions";
 import { type FocusEntryFunctions } from "components/system/Files/FileManager/useFocusableEntries";
 import { useSession } from "contexts/session";
@@ -221,8 +221,7 @@ const useDraggableEntries = (
   }, [fileManagerRef]);
 
   useEffect(() => {
-    if (!isSelecting && focusedEntries.length > 1)
-      updateDragImage().then((r) => r);
+    if (!isSelecting && focusedEntries.length > 1) updateDragImage();
     else if (focusedEntries.length === 0) {
       adjustedCaptureOffsetRef.current = false;
     }
@@ -238,5 +237,3 @@ const useDraggableEntries = (
 };
 
 export default useDraggableEntries;
-
-// Path: components/system/Files/FileManager/useDraggableEntries.ts

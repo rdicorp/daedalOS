@@ -14,7 +14,6 @@ import {
 import { type SortBy } from "components/system/Files/FileManager/useSortBy";
 import { ONE_TIME_PASSIVE_EVENT, ROOT_SHORTCUT } from "utils/constants";
 import { haltEvent } from "utils/functions";
-import React from "react";
 
 export type FileStat = Stats & {
   systemShortcut?: boolean;
@@ -261,9 +260,7 @@ export const handleFileInputEvent = (
         const [singleFile] = objectReaders;
 
         if (hasUpdateId) {
-          callback(singleFile.name, undefined, COMPLETE_ACTION.UPDATE_URL).then(
-            (r) => r
-          );
+          callback(singleFile.name, undefined, COMPLETE_ACTION.UPDATE_URL);
         }
         if (hasUpdateId || singleFile.directory === singleFile.name) return;
       }

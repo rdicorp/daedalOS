@@ -22,6 +22,7 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
     div {
       display: flex;
       justify-content: space-around;
+      margin-right: 2px;
       min-width: 102px;
       padding-left: 4px;
       width: 142px;
@@ -42,6 +43,10 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         width: 20px;
       }
 
+      &:hover {
+        background-color: rgb(103, 103, 103);
+      }
+
       &:active {
         background-color: rgb(110, 110, 110);
       }
@@ -60,6 +65,11 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       height: 37px;
       justify-content: left;
       padding: 0 8px;
+
+      button {
+        margin-bottom: 4px;
+        margin-right: 8px;
+      }
     }
 
     input {
@@ -71,7 +81,8 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
       height: 34px;
       letter-spacing: 0.2px;
       margin: 0 6px;
-      padding: 0 13px 2px;
+      padding: 0 13px;
+      padding-bottom: 2px;
       width: 100%;
 
       &:focus {
@@ -82,101 +93,6 @@ const StyledBrowser = styled.div<StyledBrowserProps>`
         background-color: rgb(0, 74, 119);
       }
     }
-  }
-
-  #tabs-nav {
-    background-color: rgb(87, 87, 87);
-    border-bottom: 1px solid rgb(118, 115, 118);
-    display: flex;
-    padding: 4px;
-
-    button {
-      background-color: rgb(120, 120, 120);
-      border: 1px solid rgb(100, 100, 100);
-      border-radius: 4px 4px 0 0;
-      color: white;
-      margin-right: 2px;
-      padding: 6px 12px;
-      transition: background 0.2s ease-in-out;
-
-      &:hover {
-        background-color: rgb(140, 140, 140);
-      }
-
-      &:active {
-        background-color: rgb(160, 160, 160);
-      }
-
-      &[data-active="true"] {
-        background-color: white;
-        border-bottom: none;
-        color: black;
-        padding-bottom: 7px;
-      }
-    }
-
-    .tab-container {
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .close-tab {
-      background-color: transparent;
-      border: none;
-      color: red;
-      cursor: pointer;
-      margin-left: 8px;
-      padding: 0 6px;
-      width: fit-content;
-
-      &:hover {
-        color: darkred;
-      }
-    }
-
-    #add-tab {
-      background-color: rgb(87, 87, 87);
-      border: 1px solid rgb(100, 100, 100);
-      border-radius: 4px;
-      color: white;
-      font-size: 16px;
-      margin-left: 4px;
-      padding: 6px 12px;
-      transition: background 0.2s ease-in-out;
-      width: fit-content;
-
-      &:hover {
-        background-color: rgb(140, 140, 140);
-      }
-
-      &:active {
-        background-color: rgb(160, 160, 160);
-      }
-    }
-  }
-
-  .bookmark-button {
-    align-items: center;
-    cursor: pointer;
-    display: flex;
-    width: 50px;
-  }
-
-  .bookmark-container {
-    align-items: center;
-    display: flex;
-    padding: 5px;
-
-    &:hover {
-      background-color: rgb(140, 140, 140);
-    }
-  }
-
-  .bookmark-name {
-    font-size: 16px;
-    margin-left: 8px;
-    white-space: nowrap;
   }
 `;
 

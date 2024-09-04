@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useEffect, useMemo, useState } from "react";
+import { forwardRef, memo, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { SUPPORTED_ICON_PIXEL_RATIOS } from "utils/constants";
 import {

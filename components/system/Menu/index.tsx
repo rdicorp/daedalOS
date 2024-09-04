@@ -1,5 +1,5 @@
 import { type Position } from "react-rnd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MenuItemEntry from "components/system/Menu/MenuItemEntry";
 import StyledMenu from "components/system/Menu/StyledMenu";
 import menuTransition from "components/system/Menu/menuTransition";

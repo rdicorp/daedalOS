@@ -1,6 +1,5 @@
 import { basename, join, resolve } from "path";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useMenu, MenuProvider } from "contexts/menu";
 import useHistoryMenu from "components/apps/Browser/useHistoryMenu";
 import useBookmarkMenu from "components/apps/Browser/useBookmarkMenu";
 import {
@@ -11,12 +10,10 @@ import { Arrow, Refresh, Stop } from "components/apps/Browser/NavigationIcons";
 import StyledBrowser from "components/apps/Browser/StyledBrowser";
 import {
   DINO_GAME,
-  RDIForm,
   HOME_PAGE,
   LOCAL_HOST,
   NOT_FOUND,
   bookmarks,
-  SalesReport,
 } from "components/apps/Browser/config";
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import useTitle from "components/system/Window/useTitle";
@@ -88,25 +85,21 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
       contentWindow.location?.replace(newUrl);
     }
   };
-
-  const [activeTab, setActiveTab] = useState(0);
   const goToLink = useCallback(
     (newUrl: string): void => {
       if (inputRef.current) {
         inputRef.current.value = newUrl;
       }
-      changeUrl(id, newUrl);
-      updateTabUrl(activeTab, newUrl);
-    },
-    [changeUrl, id, activeTab]
-  );
 
+      changeUrl(id, newUrl);
+    },
+    [changeUrl, id]
+  );
   const { backMenu, forwardMenu } = useHistoryMenu(
     history,
     position,
     moveHistory
   );
-
   const bookmarkMenu = useBookmarkMenu();
   const setUrl = useCallback(
     async (addressInput: string): Promise<void> => {
@@ -121,33 +114,15 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
         if (isHtml) setSrcDoc((await readFile(addressInput)).toString());
         setIcon(id, processDirectory.Browser.icon);
 
-        // Handle DINOGAME URL
         if (addressInput.toLowerCase().startsWith(DINO_GAME.url)) {
           changeIframeWindowLocation(
             `${window.location.origin}${DINO_GAME.path}`,
             contentWindow
           );
           prependFileToTitle(`${DINO_GAME.url}/`);
-        }
-
-        // Handle RDIForm URL
-        else if (addressInput.toLowerCase().startsWith(RDIForm.url)) {
-          changeIframeWindowLocation(
-            `${window.location.origin}${RDIForm.path}`,
-            contentWindow
-          );
-          prependFileToTitle(`${RDIForm.url}/`);
-        }
-
-        // Handle SalesReport URL
-        else if (addressInput.toLowerCase().startsWith(SalesReport.url)) {
-          changeIframeWindowLocation(
-            `${window.location.origin}${SalesReport.path}`,
-            contentWindow
-          );
-          prependFileToTitle(`${SalesReport.url}/`);
         } else if (!isHtml) {
           const processedUrl = await getUrlOrSearch(addressInput);
+
           if (
             LOCAL_HOST.has(processedUrl.host) ||
             LOCAL_HOST.has(addressInput)
@@ -161,8 +136,10 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             );
             const { O: order, C: column } = searchParams;
             const isAscending = !order || order === "A";
+
             let newSrcDoc = NOT_FOUND;
             let newTitle = "404 Not Found";
+
             if (
               (await exists(directory)) &&
               (await stat(directory)).isDirectory()
@@ -173,6 +150,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
                     const href = join(directory, entry);
                     let description;
                     let shortcutUrl;
+
                     if (getExtension(entry) === SHORTCUT_EXTENSION) {
                       try {
                         ({ comment: description, url: shortcutUrl } =
@@ -318,7 +296,9 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
             prependFileToTitle(newTitle);
           } else {
             const addressUrl = processedUrl.href;
+
             changeIframeWindowLocation(addressUrl, contentWindow);
+
             if (addressUrl.startsWith(GOOGLE_SEARCH_QUERY)) {
               prependFileToTitle(`${addressInput} - Google Search`);
             } else {
@@ -326,6 +306,7 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
                 bookmarks?.find(
                   ({ url: bookmarkUrl }) => bookmarkUrl === addressInput
                 ) || {};
+
               prependFileToTitle(name);
             }
 
@@ -388,171 +369,8 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
     }
   }, [id, linkElement]);
 
-  const [tabs, setTabs] = useState([{ id: 0, url: initialUrl }]);
-  // Function to add a new tab
-  const addTab = () => {
-    const newTabId = new Date().getTime();
-    setTabs([...tabs, { id: newTabId, url: HOME_PAGE }]);
-    setActiveTab(newTabId);
-  };
-
-  // Function to switch to a different tab
-  const switchTab = (tabId: number) => {
-    const tab = tabs.find((tab) => tab.id === tabId); // added this to check to ensure the tab exists
-    if (tab) {
-      setActiveTab(tabId);
-      setUrl(tab.url);
-    }
-  };
-
-  // Update the URL for the current tab
-  const updateTabUrl = (tabId: number, url: string) => {
-    setTabs(tabs.map((tab) => (tab.id === tabId ? { ...tab, url } : tab)));
-  };
-
-  // Update useEffect to set the URL for the active tab
-  useEffect(() => {
-    if (process && history[position] !== currentUrl.current) {
-      currentUrl.current = history[position];
-      setUrl(history[position]).then((r) => r);
-      updateTabUrl(activeTab, history[position]);
-    }
-  }, [history, position, process, setUrl, activeTab]);
-
-  // Function to close a tab
-  const closeTab = (tabId: number) => {
-    const newTabs = tabs.filter((tab) => tab.id !== tabId);
-    setTabs(newTabs);
-    if (activeTab === tabId && newTabs.length > 0) {
-      const newActiveTab = newTabs.length === 1 ? newTabs[0].id : newTabs[0].id;
-      setActiveTab(newActiveTab);
-      setUrl(newTabs[0].url);
-    } else if (newTabs.length === 0) {
-      setActiveTab(0);
-      setUrl(HOME_PAGE);
-    }
-  };
-
-  // copy paste logic
-  const { setMenu } = useMenu();
-  const [lastFocusedElement, setLastFocusedElement] =
-    useState<HTMLElement | null>(null);
-  const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault();
-    const { clientX, clientY } = event;
-    const element = event.target as HTMLElement;
-    setMenu({
-      items: [
-        {
-          label: "Copy",
-          action: () => handleCopy(element),
-        },
-        {
-          label: "Paste",
-          action: () => handlePaste(element),
-        },
-      ],
-      x: clientX,
-      y: clientY,
-    });
-  };
-  const handleCopy = (element: HTMLElement) => {
-    if (
-      element instanceof HTMLInputElement ||
-      element instanceof HTMLTextAreaElement
-    ) {
-      const selectionStart = element.selectionStart ?? 0;
-      const selectionEnd = element.selectionEnd ?? 0;
-      const selectedText = element.value.substring(
-        selectionStart,
-        selectionEnd
-      );
-      if (selectedText) {
-        navigator.clipboard
-          .writeText(selectedText)
-          .then(() => {
-            setMenu({ items: [], x: 0, y: 0 });
-          })
-          .catch((err) => {
-            console.error("Failed to copy selected text:", err);
-          });
-      }
-    }
-  };
-  const handlePaste = (element: HTMLElement) => {
-    if (
-      lastFocusedElement instanceof HTMLInputElement ||
-      lastFocusedElement instanceof HTMLTextAreaElement
-    ) {
-      navigator.clipboard
-        .readText()
-        .then((text) => {
-          if (document.body.contains(lastFocusedElement)) {
-            const selectionStart = lastFocusedElement.selectionStart ?? 0;
-            const selectionEnd = lastFocusedElement.selectionEnd ?? 0;
-            const currentValue = lastFocusedElement.value;
-            const newValue =
-              currentValue.slice(0, selectionStart) +
-              text +
-              currentValue.slice(selectionEnd);
-            lastFocusedElement.value = newValue;
-            lastFocusedElement.setSelectionRange(
-              selectionStart + text.length,
-              selectionStart + text.length
-            );
-
-            // Manually update the state
-            switch (lastFocusedElement.id) {
-              case "urlInput":
-                setUrl(newValue);
-                break;
-              default:
-                break;
-            }
-
-            const inputEvent = new Event("input", { bubbles: true });
-            lastFocusedElement.dispatchEvent(inputEvent);
-            setMenu({ items: [], x: 0, y: 0 });
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to read clipboard contents:", err);
-        });
-    }
-  };
-
-  // copy and paste logic
-
   return (
     <StyledBrowser $hasSrcDoc={Boolean(srcDoc)}>
-      <div id="tabs-nav">
-        {tabs.map((tab) => (
-          <div key={tab.id} className="tab">
-            <div className="tab-container">
-              <Button
-                id={`tab-${tab.id}`}
-                key={tab.id}
-                onClick={() => switchTab(tab.id)}
-                {...label(`Switch to tab ${tab.url}`)}
-              >
-                {tab.url}
-              </Button>
-              <Button
-                id={`close-tab-${tab.id}`}
-                className="close-tab"
-                onClick={() => closeTab(tab.id)}
-                {...label(`Close tab ${tab.url}`)}
-              >
-                X
-              </Button>
-            </div>
-          </div>
-        ))}
-        <Button id="add-tab" onClick={addTab} {...label(`Add new tab`)}>
-          +
-        </Button>
-      </div>
-
       <nav>
         <div>
           <Button
@@ -594,44 +412,29 @@ const Browser: FC<ComponentProcessProps> = ({ id }) => {
               inputRef.current.blur();
             }
           }}
-          onContextMenu={handleContextMenu}
           type="text"
-          id="urlInput"
         />
       </nav>
       <nav>
         {bookmarks.map(({ name, icon, url: bookmarkUrl }) => (
-          <div key={name} className="bookmark-container">
-            <Button
-              className="bookmark-button"
-              onClick={({ ctrlKey }) => {
-                if (window.parent) {
-                  window.parent.postMessage(
-                    {
-                      event: "bookmarkClicked",
-                      details: {
-                        name,
-                        url: bookmarkUrl,
-                      },
-                    },
-                    "*"
-                  );
-                }
-                if (ctrlKey) {
-                  open("Browser", { url: bookmarkUrl });
-                } else {
-                  goToLink(bookmarkUrl);
-                }
-              }}
-              {...label(
-                `${name}\n${bookmarkUrl.replace(/^http:\/\//, "").replace(/\/$/, "")}`
-              )}
-              {...bookmarkMenu}
-            >
-              <Icon alt={name} imgSize={32} src={icon} />
-              <span className="bookmark-name">{name}</span>
-            </Button>
-          </div>
+          <Button
+            key={name}
+            onClick={({ ctrlKey }) => {
+              if (ctrlKey) {
+                open("Browser", { url: bookmarkUrl });
+              } else {
+                goToLink(bookmarkUrl);
+              }
+            }}
+            {...label(
+              `${name}\n${bookmarkUrl
+                .replace(/^http:\/\//, "")
+                .replace(/\/$/, "")}`
+            )}
+            {...bookmarkMenu}
+          >
+            <Icon alt={name} imgSize={16} src={icon} />
+          </Button>
         ))}
       </nav>
       <iframe
