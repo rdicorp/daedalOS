@@ -30,3 +30,5 @@ const AppsLoader: FC = () => {
 };
 
 export default memo(AppsLoader);
+
+// path components/system/Apps/AppsLoader.tsx

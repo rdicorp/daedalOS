@@ -3,6 +3,20 @@ import { type Processes } from "contexts/process/types";
 import { FOLDER_ICON, TASKBAR_HEIGHT } from "utils/constants";
 
 const directory: Processes = {
+  RDIChat: {
+    Component: dynamic(() => import("components/apps/RDIChat")),
+    backgroundColor: "#f9f9f9",
+    icon: "/System/Icons/16x16/chat.png",
+    title: "RDIChat",
+  },
+
+  Email: {
+    Component: dynamic(() => import("components/apps/Email")),
+    backgroundColor: "#808080",
+    icon: "/System/Icons/16x16/outlookemail.png",
+    title: "Email",
+  },
+
   BoxedWine: {
     Component: dynamic(() => import("components/apps/BoxedWine")),
     allowResizing: false,

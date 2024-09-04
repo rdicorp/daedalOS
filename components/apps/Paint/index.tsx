@@ -129,7 +129,7 @@ const Paint: FC<ComponentProcessProps> = ({ id }) => {
             Buffer.from(await blob.arrayBuffer()),
             true
           );
-          updateFolder(dirname(fileHandle), basename(fileHandle));
+          await updateFolder(dirname(fileHandle), basename(fileHandle));
         }
       };
 

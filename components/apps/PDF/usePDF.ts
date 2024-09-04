@@ -12,6 +12,7 @@ import {
   DEFAULT_INTERSECTION_OPTIONS,
 } from "utils/constants";
 import { loadFiles } from "utils/functions";
+/*import * as console from "node:console";*/
 
 export const scales = [
   0.25, 0.33, 0.5, 0.67, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4,
@@ -76,7 +77,6 @@ const usePDF = ({
       canvas.width = viewport.width;
 
       await page.render({ canvasContext, viewport }).promise;
-
       return canvas;
     },
     [argument, containerRef, id, scale]

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .test-container {
+      display: flex;
+      justify-content: space-between;
+      width: 80%;
+      margin-top: 20px;
+    }
+
+    .left, .right {
+      width: 45%;
+    }
+
+    #emailContent {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    #timer {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #accuracy {
+      margin-top: 10px;
+      font-size: 18px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Typing Test</h1>
+
+<label for="nameInput">Enter your name:</label>
+<input type="text" id="nameInput" placeholder="Your name...">
+
+<button id="startButton">Start Test</button>
+
+<div id="timer">2:00</div> <!-- Countdown Timer -->
+
+<div class="test-container">
+  <div class="left">
+    <h3>Email Content</h3>
+    <div id="emailContent">
+      Dear Sir/Madam,<br><br>
+      I am writing to express my interest in the Software Developer position at your esteemed company.
+      I have a strong background in software development and am confident in my ability to contribute
+      effectively to your team.<br><br>
+      Sincerely,<br>
+      [Your Name]
+    </div>
+  </div>
+
+  <div class="right">
+    <h3>Type Here</h3>
+    <textarea id="typingArea" disabled></textarea>
+  </div>
+</div>
+
+<button id="finishButton" disabled>Finish Test</button>
+
+<div id="result"></div>
+<div id="accuracy"></div> <!-- Display Accuracy -->
+
+<script>
+  let startTime;
+  const testDuration = 2 * 60 * 1000; // 2 minutes in milliseconds
+  let timerInterval;
+  const emailContent = `Dear Sir/Madam,
+
+I am writing to express my interest in the Software Developer position at your esteemed company. I have a strong background in software development and am confident in my ability to contribute effectively to your team.
+
+Sincerely,
+[Your Name]`;
+
+  document.getElementById('startButton').onclick = function() {
+    const name = document.getElementById('nameInput').value.trim();
+    if (name === "") {
+      alert("Please enter your name.");
+      return;
+    }
+
+    document.getElementById('typingArea').disabled = false;
+    document.getElementById('finishButton').disabled = false;
+    document.getElementById('typingArea').focus();
+    startTime = new Date().getTime();  // Initialize startTime
+
+    // Disable start button to prevent multiple starts
+    document.getElementById('startButton').disabled = true;
+
+    // Start the countdown timer
+    startTimer(testDuration);
+
+    // Automatically finish after 2 minutes
+    setTimeout(finishTest, testDuration);
+  };
+
+  document.getElementById('finishButton').onclick = finishTest;
+
+  function startTimer(duration) {
+    let timeRemaining = duration;
+
+    timerInterval = setInterval(() => {
+      timeRemaining -= 1000;
+
+      const minutes = Math.floor(timeRemaining / (1000 * 60));
+      const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+      document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+      if (timeRemaining <= 0) {
+        clearInterval(timerInterval);
+      }
+    }, 1000);
+  }
+
+  function finishTest() {
+    clearInterval(timerInterval);
+
+    const typedText = document.getElementById('typingArea').value.trim();
+    const timeElapsed = new Date().getTime() - startTime; // Time elapsed in ms
+    const timeElapsedMinutes = timeElapsed / (1000 * 60); // Time elapsed in minutes
+
+    const wordsTyped = typedText.split(/\s+/).length;
+    const wordsPerMinute = Math.round(wordsTyped / timeElapsedMinutes);
+
+    // Calculate accuracy
+    const originalWords = emailContent.split(/\s+/);
+    const typedWords = typedText.split(/\s+/);
+    let correctWords = 0;
+
+    for (let i = 0; i < typedWords.length; i++) {
+      if (typedWords[i] === originalWords[i]) {
+        correctWords++;
+      }
+    }
+
+    const accuracy = Math.round((correctWords / originalWords.length) * 100);
+
+    document.getElementById('result').textContent = `You typed at ${wordsPerMinute} words per minute.`;
+    document.getElementById('accuracy').textContent = `Your accuracy was ${accuracy}%`;
+
+    // Disable typing area and finish button
+    document.getElementById('typingArea').disabled = true;
+    document.getElementById('finishButton').disabled = true;
+  }
+</script>
+
+</body>
+</html>

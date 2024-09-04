@@ -1,4 +1,6 @@
-import { memo } from "react";
+// path: pages/index.tsx
+
+import React, { memo } from "react";
 import AppsLoader from "components/system/Apps/AppsLoader";
 import Desktop from "components/system/Desktop";
 import Taskbar from "components/system/Taskbar";
@@ -13,8 +15,11 @@ const Index = (): React.ReactElement => {
   useGlobalKeyboardShortcuts();
   useGlobalErrorHandler();
 
+  // Generate a unique id for the Desktop component
+  const desktopId = "desktop-1";
+
   return (
-    <Desktop>
+    <Desktop id={desktopId}>
       <Taskbar />
       <AppsLoader />
     </Desktop>

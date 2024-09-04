@@ -1,5 +1,5 @@
 import { dirname, join } from "path";
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import useTransferDialog from "components/system/Dialogs/Transfer/useTransferDialog";
 import { createFileReaders } from "components/system/Files/FileManager/functions";
 import { type FocusEntryFunctions } from "components/system/Files/FileManager/useFocusableEntries";
@@ -13,6 +13,7 @@ import { useProcesses } from "contexts/process";
 import { useSession } from "contexts/session";
 import { DESKTOP_PATH, PREVENT_SCROLL } from "utils/constants";
 import { haltEvent, sendMouseClick } from "utils/functions";
+import { useClipboardEventTracker } from "../../../../hooks/EventTracker";
 
 type KeyboardShortcutEntry = (file?: string) => React.KeyboardEventHandler;
 
@@ -32,6 +33,8 @@ const useFileKeyboardShortcuts = (
   const { url: changeUrl } = useProcesses();
   const { openTransferDialog } = useTransferDialog();
   const { foregroundId } = useSession();
+
+  useClipboardEventTracker({ logToConsole: true });
 
   useEffect(() => {
     const pasteHandler = (event: ClipboardEvent): void => {
@@ -76,14 +79,17 @@ const useFileKeyboardShortcuts = (
               break;
             case "c":
               haltEvent(event);
+              console.log("Copy action detected with Ctrl+C"); // Added logging for Ctrl+C
               copyEntries(focusedEntries.map((entry) => join(url, entry)));
               break;
             case "x":
               haltEvent(event);
+              console.log("Cut action detected with Ctrl+X"); // Added logging for Ctrl+X
               moveEntries(focusedEntries.map((entry) => join(url, entry)));
               break;
             case "v":
               event.stopPropagation();
+              console.log("Paste action detected with Ctrl+V"); // Added logging for Ctrl+V
               pasteToFolder();
               break;
           }
@@ -241,3 +247,5 @@ const useFileKeyboardShortcuts = (
 };
 
 export default useFileKeyboardShortcuts;
+
+// Path: components/system/Files/FileManager/useFileKeyboardShortcuts.ts

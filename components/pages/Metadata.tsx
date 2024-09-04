@@ -1,3 +1,5 @@
+// components/pages/Metadata.tsx
+
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import { useFileSystem } from "contexts/fileSystem";

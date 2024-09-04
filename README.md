@@ -1,20 +1,10 @@
-## 🌌 **daedalOS** 🌌
-
 ## _Desktop environment in the browser_
 
-[![Feature Overview](https://img.youtube.com/vi/RRLq3T0Surs/mqdefault.jpg)](http://www.youtube.com/watch?v=RRLq3T0Surs)
-
-# System 🧠
-
-### [File System](https://github.com/jvilk/BrowserFS)
+### [File System]
 
 - File Explorer
   - Back, Forward, Recent locations, Up one level, Address bar, Search
 - [Drag & Drop](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) File Support (internal & external)
-  - Loading progress dialog
-- ZIP ([write support](https://www.npmjs.com/package/fflate)), [ZIP](https://github.com/jvilk/BrowserFS/blob/master/src/backends/ZipFS.ts)/[ISO](https://github.com/jvilk/BrowserFS/blob/master/src/backends/IsoFS.ts) read support, [7Z/GZ/RAR/TAR/etc. extract](https://github.com/use-strict/7z-wasm) support
-- Writes to [IndexedDb](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
-- Group selection/manipulation & drag to sort/arrange
 - Dynamic and auto cached icons for [music](https://github.com/Borewit/music-metadata-browser), images, video & emulator states
 - Context Menus
   - Cut, Copy, Create shortcut, Delete, Rename
@@ -210,26 +200,6 @@
 - Playlist & streaming support
 - Visualization support (["Milkdrop"](https://github.com/jberg/butterchurn))
 
-# Games 🎮
-
-### [ClassiCube](https://www.classicube.net/)
-
-- Minecraft Classic compatible client
-
-### [DX-Ball](https://habr.com/en/post/147339/)
-
-- Block breaker arcade game like Arkanoid
-
-### [Space Cadet Pinball](https://github.com/alula/SpaceCadetPinball)
-
-- Reverse engineering of 3D Pinball from Windows
-
-### [Quake III Arena](https://github.com/lrusso/Quake3)
-
-- Port of the classic first-person shooter
-
-# Try It 🚀
-
 ##### Requirements
 
 - [Node.js](https://nodejs.org/en/download/)
@@ -258,6 +228,16 @@ docker build -t daedalos .
 docker run -dp 3000:3000 --rm --name daedalos daedalos
 ```
 
-##### Notes
-
-- If during `yarn install` you receive the error `digital envelope routines::unsupported`, you need to set `NODE_OPTIONS` to `--openssl-legacy-provider` ([1](https://github.com/DustinBrett/daedalOS/blob/main/Dockerfile#L3), [2](https://github.com/DustinBrett/daedalOS/blob/main/.github/workflows/main.yml#L17), [3](https://stackoverflow.com/a/69699772/5895982))
+```
+nvm install 18.20.3
+node -v
+Node.js Must be 18.20.3
+You set the NODE_OPTIONS environment variable to:
+ --openssl-legacy-provider to address the OpenSSL issues.
+ user environment variable
+  C:\Users\YourUserName\AppData\Roaming\nvm\v18.20.3
+  system environment variable
+ C:\Users\YourUserName\AppData\Roaming\nvm\v18.20.3
+ yarn cache clean
+ yarn install
+```
